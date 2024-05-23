@@ -19,8 +19,9 @@ router.get("/github", passport.authenticate("github",{}),(req, res) => {
 
 router.get("/callbackGithub", passport.authenticate("github",{failureRedirect:"/api/sessions/error"}),(req, res) => {
     req.session.usuario = req.user;
-    res.setHeader("Content-Type","application/json");
-    return res.status(200).json({payload: req.user});
+    //res.setHeader("Content-Type","application/json");
+    //return res.status(200).json({payload: req.user});
+    return res.status(200).redirect("/products");
 });
 
 router.post("/registro", passport.authenticate("registro",{failureRedirect:"/api/sessions/error"}), async (req, res) => {
@@ -45,12 +46,13 @@ router.get("/logout", auth, (req, res) => {
         if(error){console.log(error);
             res.setHeader("Content-Type","application/json");
             return res.status(500).json({error:"Error inesperado en el servidor", detalle:`${error.message}`});
+            
         }
     })
 
-    res.setHeader("Content-Type","application/json");
-    return res.status(200).json({payload:"Logout exito"});
-
+    //res.setHeader("Content-Type","application/json");
+    //return res.status(200).json({payload:"Logout exito"});
+    return res.status(200).redirect("/login");
 });
 
 router.get("/crearcookie", async (req, res) => {

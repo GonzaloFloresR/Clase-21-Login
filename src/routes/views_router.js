@@ -43,14 +43,14 @@ router.get("/login",(req, res, next)=>{
 });
 
 router.get("/perfil", auth, (req, res) => {
-    datos = {       title:"Página de Registro de Usuarios",
+    datos = {       title:"Página de Perfíl de Usuarios",
                     description:`Utilización de plantillas Handlebars y websocket
-                    Registro de usuarios con Session`,
+                    Perfíl del usuarios con Session`,
                     keywords:"Session, Cookies, Plantillas, handlebars, JS, Coderhouse, Cursos BackEnd",
                     author:"Gonzalo Flores"
                 }
     res.setHeader("Content-Type","text/html");
-    return res.status(200).render("perfil",{datos, usuario: req.session.usuario, login:req.session.usuario});
+    return res.status(200).render("perfil",{datos, login:req.session.usuario});
 });
 
 router.get("/chat", (req, res) => {
