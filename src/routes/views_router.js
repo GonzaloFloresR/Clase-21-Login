@@ -26,8 +26,8 @@ router.get("/registro", (req, res, next)=>{
     return res.status(200).render("regristro",{datos, error, login:req.session.usuario});
 });
 
-router.get("/login",(req, res, next)=>{
-    if(req.session.usuario){
+router.get("/login",(req, res, next) => {
+    if(req.session?.usuario){
         return res.redirect("/perfil");
     }
     next();
@@ -39,7 +39,7 @@ router.get("/login",(req, res, next)=>{
                 }
     let {error, message} = req.query;
     res.setHeader("Content-Type","text/html");
-    return res.status(200).render("login",{datos, error, message, login:req.session.usuario});
+    return res.status(200).render("login",{datos, error, message, login:req.session?.usuario});
 });
 
 router.get("/perfil", auth, (req, res) => {
@@ -77,7 +77,7 @@ router.get("/home", async(req, res) => {
                 author:"Gonzalo Flores"
             };
             res.setHeader("Content-Type","text/html");
-            return res.status(200).render("home",{productos, datos, login:req.session.usuario});
+            return res.status(200).render("home",{productos, datos, login:req.session?.usuario});
         } catch(error){ 
             console.log(error);
             res.setHeader('Content-Type','application/json');
@@ -143,7 +143,9 @@ router.get("/products", auth, async(req, res) => {
             limit = 10;
         }
     }
-    let carrito = req.session.usuario.cart;
+    //let carrito = req.session.usuario.cart;
+
+    let carrito = req.user.cart;
 
     datos = {   title:"Bienvenido a mi primera plantilla Handlebars 2024 JS",
                 nombre:"Gonzalo",
@@ -155,7 +157,7 @@ router.get("/products", auth, async(req, res) => {
         let {docs:productos, ...pageInfo} = await ProductManager.getProducts(limit,page);
 
         res.setHeader("Content-Type","text/html");
-        return res.status(200).render("products",{productos, datos, pageInfo, mensaje, carrito,login:req.session.usuario});
+        return res.status(200).render("products",{productos, datos, pageInfo, mensaje, carrito,login:req.user});
     } catch(error){ 
         console.log(error.message);
         res.setHeader('Content-Type','application/json');

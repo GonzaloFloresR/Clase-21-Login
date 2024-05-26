@@ -12,18 +12,17 @@
     <div id="container" >
         <h1>Login de usuarios</h1>
         <h2>Ingresar su Usuario (correo eléctronico) y contraseña</h2>
-        <form class="formSession" action="/api/sessions/login" method="post" autocomplete="off">
+        <form class="formSession" action="/api/sessions/login" method="post">
         {{#if error}}
             <div class="error">{{error}}</div>
             {{else if message}}
             <div class="succes">{{message}}</div>
         {{/if}}
-            <input type="email" name="usuario" placeholder="Correo Electrónico" />
-            <input type="password" name="password" placeholder="Password" />
-            <input type="text" name="web" value="web" hidden />
-            <input type="submit" value="Ingresar">
+            <input type="email" name="email" id="email" placeholder="Correo Electrónico" autocomplete="email" />
+            <input type="password" name="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
+            <input type="submit" value="Ingresar" id="submit">
         </form>
-        <a href="/api/sessions/github" title="Acceder con Github" class="github">Acceder con Github</a>
+        
     </div>
 </main>
 
@@ -33,5 +32,11 @@
     </ul>
     
 </footer>
+
+
+<script src="/js/login.js" ></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
 

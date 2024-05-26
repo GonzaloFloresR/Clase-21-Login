@@ -11,9 +11,11 @@ const storage = multer.diskStorage({
 });
 
 
+const SECRET = "CoderCoder123";
+
 const generaHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 const validaPassword = (password, passwordHash) => bcrypt.compareSync(password, passwordHash);
 
 const uploader = multer({storage: storage});
 
-module.exports = {uploader, generaHash, validaPassword};
+module.exports = {uploader, generaHash, validaPassword, SECRET};

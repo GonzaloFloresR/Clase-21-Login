@@ -1,12 +1,13 @@
 const { Router } = require("express");
 const router = Router();
 const UsuarioManager = require("../dao/UsersManager.js");
-const { generaHash, validaPassword } = require("../utils.js");
+const { generaHash, validaPassword, SECRET } = require("../utils.js");
 const CartsManager = require("../dao/CartsManager.js");
 const usuarioManager = new UsuarioManager();
 const cartsManagar =new CartsManager();
 const auth = require("../middleware/auth.js");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
 
 router.get("/error",(req, res) => {
     res.setHeader("Content-Type","application/json");
@@ -30,15 +31,26 @@ router.post("/registro", passport.authenticate("registro",{failureRedirect:"/api
     return res.status(200).redirect("/login");
 });
 
-router.post("/login", passport.authenticate("login",{failureRedirect:"/api/sessions/error"}), async(req, res) => {
-    let usuario = {...req.user};
+router.post("/login", async(req, res) => {
+    let {email , password} = req.body;
+    if(!email || !password){
+        res.setHeader("Content-Type","application/json");
+        return res.status(400).json({error:"Ingrese mail y contraseña"});
+    }
+    let usuario = await usuarioManager.getUsuarioBy({email});
+    if(!validaPassword(password , usuario.password)){
+        res.setHeader("Content-Type","application/json");
+        return res.status(400).json({error:"Error de credenciales"});
+    }
+    usuario = {...usuario};
+    let token = jwt.sign(usuario, SECRET, {expiresIn:"1h"})
     delete usuario.password;
     delete usuario.createdAt;
     delete usuario.updatedAt;
-    req.session.usuario = usuario;
-    //res.setHeader("Content-Type","application/json");
-    //return res.status(200).json({payload:"Login Correcto", usuario});
-    return res.status(200).redirect("/products");
+    //req.session.usuario = usuario;
+    res.setHeader("Content-Type","application/json");
+    return res.status(200).json({usuarioLogueado: usuario, token});
+    //return res.status(200).redirect("/products");
 });
 
 router.get("/logout", auth, (req, res) => {

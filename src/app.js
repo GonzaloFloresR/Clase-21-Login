@@ -1,5 +1,6 @@
 const express = require("express");
-const session = require("express-session");
+//const session = require("express-session");
+const jwt = require("jsonwebtoken");
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
 const path = require('path');
@@ -21,7 +22,7 @@ const app = express();
 
 app.use(express.json()); 
 app.use(express.urlencoded({extended:true}));
-app.use(session({
+/* app.use(session({
     secret:"CoderCoder123",
     resave:true,
     saveUninitialized:true,
@@ -31,10 +32,10 @@ app.use(session({
         dbName:"ecommerce",
         collectionName:"sessions"
     })
-}));
-initPassport();
-app.use(passport.initialize());
-app.use(passport.session()); // Solo si uso sessions
+})); */
+//initPassport();
+//app.use(passport.initialize());
+//app.use(passport.session()); // Solo si uso sessions
 app.use(cookieParser());
 
 app.engine('handlebars', engine());
