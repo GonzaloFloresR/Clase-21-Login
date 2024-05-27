@@ -143,7 +143,6 @@ router.get("/products", auth, async(req, res) => {
             limit = 10;
         }
     }
-    //let carrito = req.session.usuario.cart;
 
     let carrito = req.user.cart;
 

@@ -21,26 +21,23 @@ submit.addEventListener("click", async(e) => {
         let respuesta = await fetch("/api/sessions/login", {
             method:"post",
             headers:{"Content-Type":"application/json"},
-            body:JSON.stringify(body)
+            body:JSON.stringify(body),
+            redirect: 'follow' 
         } );
         let datos = await respuesta.json(); //token y usuarioLogueado
-        localStorage.setItem("token", datos.token);
+        console.log(datos, "Desde linea 27 en login.js");
     } 
     catch(error){
         console.log(error);
     }
     
     try {
-        let loguear = await fetch("/products", {
-            method:"GET",
-            headers:{
-                "Authorization":"Bearer " + localStorage.getItem("token")
-            },
-            redirect:true
-        }); console.log(loguear,"linea 39 loguear");
+        let loguear = await fetch("/products");
+        console.log(loguear,"linea 35 loguear");
+
         if(loguear.ok){
             let datoLoguear = await loguear.json();
-            console.log(datoLoguear, "linea 41 en login");
+            console.log(datoLoguear, "linea 39 en login");
         }
     } 
     catch(error){
