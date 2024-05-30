@@ -33,10 +33,12 @@ app.use(express.urlencoded({extended:true}));
         collectionName:"sessions"
     })
 })); */
-//initPassport();
-//app.use(passport.initialize());
-//app.use(passport.session()); // Solo si uso sessions
+
 app.use(cookieParser());
+initPassport();
+app.use(passport.initialize());
+//app.use(passport.session()); // Solo si uso sessions
+
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');

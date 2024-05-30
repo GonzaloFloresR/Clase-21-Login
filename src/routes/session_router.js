@@ -35,6 +35,10 @@ router.post("/login", async(req, res) => {
         return res.status(400).json({error:"Ingrese mail y contraseña"});
     }
     let usuario = await usuarioManager.getUsuarioBy({email});
+    if(!usuario){
+        res.setHeader("Content-Type","application/json");
+        return res.status(400).json({error:"No existe usuario"});
+    }
     if(!validaPassword(password , usuario.password)){
         res.setHeader("Content-Type","application/json");
         return res.status(400).json({error:"Error de credenciales"});

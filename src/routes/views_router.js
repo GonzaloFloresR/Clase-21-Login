@@ -5,16 +5,17 @@ const productManager = require("../dao/ProductManagerMONGO.js");
 const { isValidObjectId } = require("mongoose");
 const ProductManager = new productManager();
 const auth = require("../middleware/auth.js");
+const passport = require("passport");
 
 
 const cartsManager = new CartsManager(); //Agregado en After Class
 
-router.get("/registro", (req, res, next)=>{
-    if(req.session.usuario){
+router.get("/registro", (req, res, next) => {
+    if(req.user){
         return res.redirect("/perfil");
     }
     next();
-},(req, res) => {
+}, (req, res) => {
     datos = {       title:"Página de Registro de Usuarios",
                     description:`Utilización de plantillas Handlebars y websocket
                     Registro de usuarios con Session`,
@@ -23,11 +24,12 @@ router.get("/registro", (req, res, next)=>{
                 }
     let {error} = req.query;
     res.setHeader("Content-Type","text/html");
-    return res.status(200).render("regristro",{datos, error, login:req.session.usuario});
+    return res.status(200).render("regristro",{datos, error, login:req.user});
 });
 
+
 router.get("/login",(req, res, next) => {
-    if(req.session?.usuario){
+    if(req.user){
         return res.redirect("/perfil");
     }
     next();
@@ -39,10 +41,10 @@ router.get("/login",(req, res, next) => {
                 }
     let {error, message} = req.query;
     res.setHeader("Content-Type","text/html");
-    return res.status(200).render("login",{datos, error, message, login:req.session?.usuario});
+    return res.status(200).render("login",{datos, error, message, login:req.user});
 });
 
-router.get("/perfil", auth, (req, res) => {
+router.get("/perfil", passport.authenticate("jwt",{session:false}), (req, res) => {
     datos = {       title:"Página de Perfíl de Usuarios",
                     description:`Utilización de plantillas Handlebars y websocket
                     Perfíl del usuarios con Session`,
@@ -50,7 +52,7 @@ router.get("/perfil", auth, (req, res) => {
                     author:"Gonzalo Flores"
                 }
     res.setHeader("Content-Type","text/html");
-    return res.status(200).render("perfil",{datos, login:req.session.usuario});
+    return res.status(200).render("perfil",{datos, login:req.user});
 });
 
 router.get("/chat", (req, res) => {
@@ -62,7 +64,7 @@ router.get("/chat", (req, res) => {
                     author:"Gonzalo Flores"
                 }
     res.setHeader("Content-Type","text/html");
-    return res.status(200).render("chat",{datos, login:req.session.usuario});
+    return res.status(200).render("chat",{datos, login:req.user});
 });
 
 router.get("/home", async(req, res) => {
@@ -77,7 +79,7 @@ router.get("/home", async(req, res) => {
                 author:"Gonzalo Flores"
             };
             res.setHeader("Content-Type","text/html");
-            return res.status(200).render("home",{productos, datos, login:req.session?.usuario});
+            return res.status(200).render("home",{productos, datos, login:req.user});
         } catch(error){ 
             console.log(error);
             res.setHeader('Content-Type','application/json');
@@ -98,7 +100,7 @@ router.get("/home", async(req, res) => {
             try {
                 producto = await ProductManager.getProductBy({_id:id});
                 res.setHeader("Content-Type","text/html");
-            return res.status(200).render("home",{producto, datos, id, login:req.session.usuario});
+            return res.status(200).render("home",{producto, datos, id, login:req.user});
             } 
             catch (error){
                 console.log(error);
@@ -121,7 +123,7 @@ router.get("/realtimeproducts", async(req, res) => {
         //let productos = await ProductManager.getProducts();
         let {docs:productos} = await ProductManager.getProducts(20,1);
         res.setHeader("Content-Type","text/html");
-        return res.status(200).render("realTimeProducts",{productos, datos, login:req.session.usuario});
+        return res.status(200).render("realTimeProducts",{productos, datos, login:req.user});
     } catch(error){ 
         console.log(error);
         res.setHeader('Content-Type','application/json');
@@ -129,7 +131,7 @@ router.get("/realtimeproducts", async(req, res) => {
     }
 });
 
-router.get("/products", auth, async(req, res) => {
+router.get("/products", passport.authenticate("jwt",{session:false}), async(req, res) => {
     let {limit, page, mensaje} = req.query;
     if(page){
         page = Number(page); 
@@ -164,7 +166,7 @@ router.get("/products", auth, async(req, res) => {
     }
 });
 
-router.get("/carrito/:cid", auth, async(req, res) => {
+router.get("/carrito/:cid", passport.authenticate("jwt",{session:false}), async(req, res) => {
     let {cid} = req.params;
     if(!isValidObjectId(cid)){
         res.setHeader('Content-Type','application/json');
@@ -180,7 +182,7 @@ router.get("/carrito/:cid", auth, async(req, res) => {
         let carrito = await cartsManager.getCarritoById({_id:cid});
 
         res.setHeader("Content-Type","text/html");
-        return res.status(200).render("carrito",{carrito, datos, login:req.session.usuario});
+        return res.status(200).render("carrito",{carrito, datos, login:req.user});
     } catch(error){ 
         console.log(error.message);
         res.setHeader('Content-Type','application/json');

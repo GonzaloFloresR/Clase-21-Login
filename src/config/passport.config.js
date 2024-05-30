@@ -1,16 +1,44 @@
 const passport = require("passport");
-const local = require("passport-local");
-const GitHub = require("passport-github2");
+const jwtPass = require("passport-jwt");
+//const local = require("passport-local");
+//const GitHub = require("passport-github2");
+
 const UsuarioManager = require("../dao/UsersManager.js");
 const CartsManager = require("../dao/CartsManager.js");
-const {generaHash, validaPassword} = require("../utils.js"); 
+const {generaHash, validaPassword, SECRET} = require("../utils.js"); 
 
 const cartsManager = new CartsManager();
 const usuarioManager = new UsuarioManager();
 
+const buscaToken = (req) => {
+    let token = null;
+    if(req.cookies["authorization"]){
+        token = req.cookies["authorization"];
+    }
+    return token;
+}
+
 const initPassport = () => {
-    
+
     passport.use(
+        "jwt",
+        new jwtPass.Strategy(
+            {
+                secretOrKey:SECRET,
+                jwtFromRequest: new jwtPass.ExtractJwt.fromExtractors([buscaToken])
+            }, 
+            async(contenidoToken,done) => {
+                try {
+                    return done(null, contenidoToken);
+                }
+                catch(error){
+                    return done(error);
+                }
+
+        })
+    );
+    
+    /* passport.use(
         "github",
         new GitHub.Strategy(
             {
@@ -41,9 +69,9 @@ const initPassport = () => {
                 }
             }
         )
-    );// cerrando Github
+    );// cerrando Github */
 
-    passport.use(
+    /* passport.use(
         "registro",
         new local.Strategy(
             {
@@ -104,8 +132,8 @@ const initPassport = () => {
                         return done(error);
                     }
             })
-    );
-
+    ); */
+/* 
     //Cerrando registro y login
     passport.serializeUser((usuario, done) => {
         return done(null, usuario._id)
@@ -115,7 +143,7 @@ const initPassport = () => {
         let usuario = await usuarioManager.getUsuarioBy({_id:id});
         return done(null, usuario)
     });
-
+ */
 }
 
 module.exports = initPassport;

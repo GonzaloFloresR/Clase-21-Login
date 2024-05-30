@@ -10,37 +10,31 @@ submit.addEventListener("click", async(e) => {
         title: "Mmmm 🤔...",
         text: "Debes completar los Email y Password!"
         });
-    }
-
-    let body = {
-        email: email.value.trim(),
-        password: password.value.trim()
-    };
-
-    try {
-        let respuesta = await fetch("/api/sessions/login", {
-            method:"post",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify(body),
-            redirect: 'follow' 
-        } );
-        let datos = await respuesta.json(); //token y usuarioLogueado
-        console.log(datos, "Desde linea 27 en login.js");
-    } 
-    catch(error){
-        console.log(error);
-    }
-    
-    try {
-        let loguear = await fetch("/products");
-        console.log(loguear,"linea 35 loguear");
-
-        if(loguear.ok){
-            let datoLoguear = await loguear.json();
-            console.log(datoLoguear, "linea 39 en login");
+    } else {
+        let body = {
+            email: email.value.trim(),
+            password: password.value.trim()
+        };
+    let datos = null;
+        try {
+            let respuesta = await fetch("/api/sessions/login", {
+                method:"post",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(body),
+            } );
+            datos = await respuesta.json(); //token y usuarioLogueado
+            if(datos.error){console.error(datos.error)}
+        } 
+        catch(error){
+            console.error(error);
         }
-    } 
-    catch(error){
-        console.log(error)
+    if(datos){
+        if(datos.token){
+            window.location.href = '/products';
+        }
+        else { 
+            let error = "Correo o Password Errado";
+        }
+    }   
     }
 });
