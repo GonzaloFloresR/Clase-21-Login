@@ -50,17 +50,15 @@ router.post("/login", async(req, res) => {
     delete usuario.createdAt;
     delete usuario.updatedAt;
 
+    let user = jwt.verify(token, SECRET);
+    res.user = user;
+
     res.setHeader("Content-Type","application/json");
     return res.status(200).json({usuarioLogueado: usuario, token});
 });
 
 router.get("/logout", auth, (req, res) => {
-    req.session.destroy(error => {
-        if(error){console.log(error);
-            res.setHeader("Content-Type","application/json");
-            return res.status(500).json({error:"Error inesperado en el servidor", detalle:`${error.message}`});
-        }
-    })
+    res.clearCookie("authorization");
     return res.status(200).redirect("/login");
 });
 

@@ -6,6 +6,8 @@ const { isValidObjectId } = require("mongoose");
 const ProductManager = new productManager();
 const auth = require("../middleware/auth.js");
 const passport = require("passport");
+const {SECRET} = require("../utils.js");
+const jwt = require("jsonwebtoken");
 
 
 const cartsManager = new CartsManager(); //Agregado en After Class
@@ -78,6 +80,17 @@ router.get("/home", async(req, res) => {
                 keywords:"Plantilla, handlebars, JS, Coderhouse, Cursos BackEnd",
                 author:"Gonzalo Flores"
             };
+            if(req.cookies["authorization"]){
+                let token = req.cookies["authorization"];
+                try {
+                    let usuario = jwt.verify(token, SECRET);
+                    req.user = usuario;
+                }
+                catch(error){
+                    res.setHeader("Content-Type","text/html");
+                    return res.status(200).render("home",{productos, datos});
+                }
+            } 
             res.setHeader("Content-Type","text/html");
             return res.status(200).render("home",{productos, datos, login:req.user});
         } catch(error){ 
@@ -156,7 +169,7 @@ router.get("/products", passport.authenticate("jwt",{session:false}), async(req,
     }
     try { 
         let {docs:productos, ...pageInfo} = await ProductManager.getProducts(limit,page);
-
+        
         res.setHeader("Content-Type","text/html");
         return res.status(200).render("products",{productos, datos, pageInfo, mensaje, carrito,login:req.user});
     } catch(error){ 
